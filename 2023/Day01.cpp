@@ -4,29 +4,30 @@ namespace tehKellz {
 
 REGISTER_TEST(Day01);
 
-void Part1() {
-  std::ifstream input("2023/Day01.input");
-  std::string line;
-  uint64_t total = 0;
-  while (input >> line) {
-    std::string numstring;
-    for (const char &c : line) {
-      if (c >= '0' && c <= '9') {
-        numstring += c;
-        break;
-      }
+uint64_t GetCalib(const std::string &line) {
+  std::string numstring;
+  for (const char &c : line) {
+    if (c >= '0' && c <= '9') {
+      numstring += c;
+      break;
     }
-    for (int i = line.length() - 1; i >= 0; --i) {
-      const char &c = line[i];
-      if (c >= '0' && c <= '9') {
-        numstring += c;
-        break;
-      }
-    }
-    total += atoi(numstring.c_str());
   }
+  for (int i = line.length() - 1; i >= 0; --i) {
+    const char &c = line[i];
+    if (c >= '0' && c <= '9') {
+      numstring += c;
+      break;
+    }
+  }
+  return atoi(numstring.c_str());
+}
+
+void Part1() {
+  uint64_t total = 0;
+  ProcessLines("2023/Day01.input",
+               [&](const std::string &line) { total += GetCalib(line); });
+
   std::cout << "Part1 Total: " << total << std::endl;
-  input.close();
 }
 
 std::string Convert(std::string input) {
@@ -60,32 +61,11 @@ std::string Convert(std::string input) {
 }
 
 void Part2() {
-  std::ifstream input("2023/Day01.input");
-  std::string line;
   uint64_t total = 0;
-  while (input >> line) {
-    std::string numstring;
-    std::string newLine = Convert(line);
-
-    for (const char &c : newLine) {
-      if (c >= '0' && c <= '9') {
-        numstring += c;
-        break;
-      }
-    }
-    for (int i = newLine.length() - 1; i >= 0; --i) {
-      const char &c = newLine[i];
-      if (c >= '0' && c <= '9') {
-        numstring += c;
-        break;
-      }
-    }
-    // std::cout << " " << line << " => " << newLine << " => " << numstring <<
-    // std::endl;
-    total += atoi(numstring.c_str());
-  }
+  ProcessLines("2023/Day01.input", [&](const std::string &line) {
+    total += GetCalib(Convert(line));
+  });
   std::cout << "Part2 Total: " << total << std::endl;
-  input.close();
 }
 
 void Day01::Run() {
