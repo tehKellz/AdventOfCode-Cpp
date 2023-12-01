@@ -1,8 +1,4 @@
-//#include "Common.h"
-#include <iostream>
-
-#include "2023/Tests.h"
-// #include "Demos/Demo01.h"
+#include "Common.h"
 
 int main() {
 
