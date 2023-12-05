@@ -2,7 +2,7 @@
 
 namespace tehKellz {
 
-REGISTER_TEST(Day01);
+// REGISTER_TEST(Day01);
 
 uint64_t GetCalib(const std::string &line) {
   std::string numstring;
