@@ -4,27 +4,14 @@ namespace tehKellz {
 
 REGISTER_TEST(Day03);
 
-struct Symbol {
-  char symbol = '.';
-  int xOff = 0;
-  int yOff = 0;
-};
-
-struct Part {
-  uint32_t num = 0;
-  std::vector<Symbol> symbols;
-};
-
 struct Gear {
-  int x = 0;
-  int y = 0;
-  std::vector<uint32_t> num;
+  std::vector<uint32_t> parts;
 };
 
 struct Schematic {
   char blueprint[142][142] = {{0, 0}};
-  std::vector<Part> parts;
-  std::vector<Gear> gears;
+  std::vector<int> parts;
+  std::unordered_map<uint32_t, Gear> gears;
 };
 
 bool isDigit(char c) { return (c >= '0' && c <= '9'); }
@@ -43,53 +30,40 @@ void Day03::Parse(Schematic &schematic) {
   // find parts in the blueprint
   for (int y = 1; y < 141; ++y) {
     for (int x = 1; x < 141; ++x) {
-      char currChar = schematic.blueprint[y][x];
-      if (isDigit(currChar)) {
-        Part currPart;
-        currPart.num = atoi(&schematic.blueprint[y][x]);
+      if (!isDigit(schematic.blueprint[y][x]))
+        continue;
 
-        int numStart = x;
-        while (isDigit(schematic.blueprint[y][x++]))
-          ;
-        int numEnd = x - 1;
-        int length = numEnd - numStart;
+      int numStart = x;
+      bool nearSymbols = false;
+      int partNum = atoi(&schematic.blueprint[y][numStart]);
 
-        for (int x1 = -1; x1 < length + 1; ++x1) {
-          for (int y1 = -1; y1 < 2; ++y1) {
-            char tmp = schematic.blueprint[y + y1][numStart + x1];
-            if (isSymbol(tmp)) {
-              currPart.symbols.push_back({tmp, x1, y1});
-            }
-            // is it a gear?
-            if (tmp == '*') {
-              // Is it already recorded?
-              bool found = false;
-              for (auto &gear : schematic.gears) {
-                if (gear.x == numStart + x1 && gear.y == y + y1) {
-                  found = true;
-                  gear.num.push_back(currPart.num);
-                }
-              }
-              if (!found) {
-                Gear currGear{numStart + x1, y + y1, {currPart.num}};
-                schematic.gears.push_back(currGear);
-              }
-            }
+      while (isDigit(schematic.blueprint[y][x++]))
+        ;
+      --x;
+      int length = x - numStart;
+
+      for (int x1 = -1; x1 < length + 1; ++x1) {
+        for (int y1 = -1; y1 < 2; ++y1) {
+          char tmp = schematic.blueprint[y + y1][numStart + x1];
+          nearSymbols |= isSymbol(tmp);
+
+          // is it a gear?
+          if (tmp == '*') {
+            uint32_t gearId = (numStart + x1) + (1000 * (y + y1));
+            schematic.gears[gearId].parts.push_back(partNum);
           }
         }
-        schematic.parts.push_back(currPart);
-        x = numEnd;
       }
+      if (nearSymbols)
+        schematic.parts.push_back(partNum);
     }
   }
 }
 
 void Day03::Part1(Schematic &schematic) {
   uint64_t total = 0;
-  for (const auto &part : schematic.parts) {
-    if (part.symbols.size() > 0) {
-      total += part.num;
-    }
+  for (const auto &partNum : schematic.parts) {
+    total += partNum;
   }
 
   std::cout << "Part1 Total: " << total << std::endl;
@@ -98,8 +72,8 @@ void Day03::Part1(Schematic &schematic) {
 void Day03::Part2(Schematic &schematic) {
   uint64_t total = 0;
   for (const auto &gear : schematic.gears) {
-    if (gear.num.size() == 2) {
-      total += (gear.num[0] * gear.num[1]);
+    if (gear.second.parts.size() == 2) {
+      total += (gear.second.parts[0] * gear.second.parts[1]);
     }
   }
 
