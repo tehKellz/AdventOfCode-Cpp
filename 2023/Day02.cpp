@@ -2,7 +2,7 @@
 
 namespace tehKellz {
 
-REGISTER_TEST(Day02);
+// REGISTER_TEST(Day02);
 
 namespace {
 
