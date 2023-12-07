@@ -4,6 +4,8 @@
 
 namespace tehKellz {
 
+struct Data;
+
 class Template : public Test {
 public:
   Template() {}
@@ -12,9 +14,9 @@ public:
   void Run() override;
 
 private:
-  void Parse();
-  void Part1();
-  void Part2();
+  void Parse(Data &data);
+  void Part1(const Data &data);
+  void Part2(const Data &data);
 };
 
 } // namespace tehKellz

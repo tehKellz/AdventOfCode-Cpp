@@ -2,7 +2,7 @@
 
 namespace tehKellz {
 
-REGISTER_TEST(Day03);
+// REGISTER_TEST(Day03);
 
 struct Gear {
   std::vector<uint32_t> parts;
